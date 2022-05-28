@@ -1,17 +1,14 @@
 package com.solana.jetpack_compose.ui.activities
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -34,15 +31,23 @@ class ProfileConstraintDecoupledActivity : ComponentActivity() {
             Jetpack_composeTheme {
                 val scaffoldState = rememberScaffoldState()
                 val coroutineScope = rememberCoroutineScope()
-                val profileRecommendationList = rememberSaveable { mutableStateOf(ArrayList<ProfileModel>()) }
-                val profileStarList = rememberSaveable { mutableStateOf(ArrayList<ProfileModel>()) }
-                profileRecommendationList.value = profileRecommendation
-                profileStarList.value = profileStar
 
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().fillMaxHeight(),
                     scaffoldState = scaffoldState,
-                    backgroundColor = Color.White
+                    backgroundColor = Color.White,
+                    bottomBar = {
+                        Button(onClick = {
+                            startActivity(Intent(this, InputActivity::class.java))
+                        },
+                            modifier = Modifier.fillMaxWidth().height(48.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray),
+                            shape = RoundedCornerShape(0)) {
+                            Text(text = "Open Activity",
+                                color = Color.White,
+                                fontSize = 18.sp)
+                        }
+                    }
                 ) {
                     LazyColumn {
                         item {
@@ -53,9 +58,9 @@ class ProfileConstraintDecoupledActivity : ComponentActivity() {
                             )
                         }
 
-                        items(profileRecommendationList.value.size) { index ->
+                        items(profileRecommendation.size) { index ->
                             Spacer(modifier = Modifier.height(32.dp))
-                            val profile = profileRecommendationList.value.getOrNull(index)
+                            val profile = profileRecommendation.getOrNull(index)
                             ProfileConstraintDecoupled(profile?.fullName.orEmpty(), profile?.city.orEmpty(), {
                                 coroutineScope.launch {
                                     scaffoldState.snackbarHostState.showSnackbar(
@@ -79,9 +84,9 @@ class ProfileConstraintDecoupledActivity : ComponentActivity() {
                             )
                         }
 
-                        items(profileStarList.value.size) { index ->
+                        items(profileStar.size) { index ->
                             Spacer(modifier = Modifier.height(32.dp))
-                            val profile = profileStarList.value.getOrNull(index)
+                            val profile = profileStar.getOrNull(index)
                             ProfileConstraintDecoupled(profile?.fullName.orEmpty(), profile?.city.orEmpty(), {
                                 coroutineScope.launch {
                                     scaffoldState.snackbarHostState.showSnackbar(
